@@ -1,0 +1,101 @@
+import React from 'react';
+import type { StockData } from '../types/financial';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+
+interface StockCardProps {
+  stock: StockData;
+  onClick?: () => void;
+}
+
+export const StockCard: React.FC<StockCardProps> = ({ stock, onClick }) => {
+  const isPositive = stock.change >= 0;
+  const isNegative = stock.change < 0;
+  const isNeutral = stock.change === 0;
+
+  const formatNumber = (num: number, decimals: number = 2): string => {
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    }).format(num);
+  };
+
+  const formatMarketCap = (marketCap: number): string => {
+    if (marketCap >= 1e12) {
+      return `$${(marketCap / 1e12).toFixed(2)}T`;
+    } else if (marketCap >= 1e9) {
+      return `$${(marketCap / 1e9).toFixed(2)}B`;
+    } else if (marketCap >= 1e6) {
+      return `$${(marketCap / 1e6).toFixed(2)}M`;
+    }
+    return `$${formatNumber(marketCap, 0)}`;
+  };
+
+  const formatVolume = (volume: number): string => {
+    if (volume >= 1e6) {
+      return `${(volume / 1e6).toFixed(1)}M`;
+    } else if (volume >= 1e3) {
+      return `${(volume / 1e3).toFixed(1)}K`;
+    }
+    return volume.toString();
+  };
+
+  return (
+    <div 
+      className={`card hover:shadow-md transition-shadow cursor-pointer ${
+        onClick ? 'hover:bg-gray-50' : ''
+      }`}
+      onClick={onClick}
+    >
+      {/* Header */}
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h3 className="text-lg font-bold text-gray-900">{stock.symbol}</h3>
+          <p className="text-sm text-gray-600 truncate max-w-48">{stock.name}</p>
+        </div>
+        <div className="text-right">
+          <div className="text-xl font-bold text-gray-900">
+            ${formatNumber(stock.price)}
+          </div>
+          <div className={`flex items-center text-sm font-medium ${
+            isPositive ? 'text-green-600' : 
+            isNegative ? 'text-red-600' : 
+            'text-gray-500'
+          }`}>
+            {isPositive && <TrendingUp className="w-4 h-4 mr-1" />}
+            {isNegative && <TrendingDown className="w-4 h-4 mr-1" />}
+            {isNeutral && <Minus className="w-4 h-4 mr-1" />}
+            {isPositive && '+'}${formatNumber(Math.abs(stock.change))} 
+            ({isPositive && '+'}{formatNumber(stock.changePercent)}%)
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 gap-4 text-sm">
+        <div>
+          <span className="text-gray-500 block">Volume</span>
+          <span className="font-medium text-gray-900">{formatVolume(stock.volume)}</span>
+        </div>
+        <div>
+          <span className="text-gray-500 block">Market Cap</span>
+          <span className="font-medium text-gray-900">{formatMarketCap(stock.marketCap)}</span>
+        </div>
+        <div>
+          <span className="text-gray-500 block">52W High</span>
+          <span className="font-medium text-gray-900">${formatNumber(stock.high52Week)}</span>
+        </div>
+        <div>
+          <span className="text-gray-500 block">52W Low</span>
+          <span className="font-medium text-gray-900">${formatNumber(stock.low52Week)}</span>
+        </div>
+      </div>
+
+      {/* Last Update */}
+      <div className="mt-4 pt-3 border-t border-gray-100">
+        <div className="text-xs text-gray-500">
+          Last updated: {new Date(stock.lastUpdate).toLocaleTimeString()}
+        </div>
+      </div>
+    </div>
+  );
+};
