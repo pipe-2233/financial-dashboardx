@@ -53,7 +53,10 @@ export const PortfolioStats: React.FC<PortfolioStatsProps> = ({ stocks }) => {
       <div className="card">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-600">Portfolio Value</p>
+            <div className="flex items-center space-x-2">
+              <p className="text-sm text-gray-600">Portfolio Value</p>
+              <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-medium">DEMO</span>
+            </div>
             <p className="text-xl font-bold text-gray-900">
               {formatCurrency(stats.totalValue)}
             </p>
@@ -68,7 +71,10 @@ export const PortfolioStats: React.FC<PortfolioStatsProps> = ({ stocks }) => {
       <div className="card">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-600">Total Change</p>
+            <div className="flex items-center space-x-2">
+              <p className="text-sm text-gray-600">Total Change</p>
+              <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-medium">DEMO</span>
+            </div>
             <p className={`text-xl font-bold ${
               stats.totalChange >= 0 ? 'text-green-600' : 'text-red-600'
             }`}>

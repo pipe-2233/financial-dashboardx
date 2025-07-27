@@ -1,6 +1,19 @@
 import React from 'react';
 import type { StockData } from '../types/financial';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  Minus,
+  Smartphone,
+  Search,
+  Monitor,
+  ShoppingCart,
+  Car,
+  Cpu,
+  Users,
+  Play,
+  Building2
+} from 'lucide-react';
 
 interface StockCardProps {
   stock: StockData;
@@ -11,6 +24,32 @@ export const StockCard: React.FC<StockCardProps> = ({ stock, onClick }) => {
   const isPositive = stock.change >= 0;
   const isNegative = stock.change < 0;
   const isNeutral = stock.change === 0;
+
+  const getCompanyIcon = (symbol: string) => {
+    const iconProps = { className: "w-8 h-8", strokeWidth: 1.5 };
+    
+    switch (symbol.toUpperCase()) {
+      case 'AAPL':
+        return <Smartphone {...iconProps} className="w-8 h-8 text-gray-600" />;
+      case 'GOOGL':
+      case 'GOOG':
+        return <Search {...iconProps} className="w-8 h-8 text-blue-600" />;
+      case 'MSFT':
+        return <Monitor {...iconProps} className="w-8 h-8 text-blue-700" />;
+      case 'AMZN':
+        return <ShoppingCart {...iconProps} className="w-8 h-8 text-orange-600" />;
+      case 'TSLA':
+        return <Car {...iconProps} className="w-8 h-8 text-red-600" />;
+      case 'NVDA':
+        return <Cpu {...iconProps} className="w-8 h-8 text-green-600" />;
+      case 'META':
+        return <Users {...iconProps} className="w-8 h-8 text-blue-500" />;
+      case 'NFLX':
+        return <Play {...iconProps} className="w-8 h-8 text-red-500" />;
+      default:
+        return <Building2 {...iconProps} className="w-8 h-8 text-gray-500" />;
+    }
+  };
 
   const formatNumber = (num: number, decimals: number = 2): string => {
     return new Intl.NumberFormat('en-US', {
@@ -48,9 +87,14 @@ export const StockCard: React.FC<StockCardProps> = ({ stock, onClick }) => {
     >
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3 className="text-lg font-bold text-gray-900">{stock.symbol}</h3>
-          <p className="text-sm text-gray-600 truncate max-w-48">{stock.name}</p>
+        <div className="flex items-center space-x-3">
+          <div className="flex-shrink-0">
+            {getCompanyIcon(stock.symbol)}
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-gray-900">{stock.symbol}</h3>
+            <p className="text-sm text-gray-600 truncate max-w-48">{stock.name}</p>
+          </div>
         </div>
         <div className="text-right">
           <div className="text-xl font-bold text-gray-900">
