@@ -45,8 +45,14 @@ export class AlphaVantageService {
       const data = await response.json();
       
       // Check for API errors
-      if (data['Error Message'] || data['Note']) {
-        throw new Error(data['Error Message'] || data['Note']);
+      if (data['Error Message'] || data['Note'] || data['Information']) {
+        const errorMsg = data['Error Message'] || data['Note'] || data['Information'];
+        if (errorMsg.includes('rate limit') || errorMsg.includes('premium')) {
+          console.warn('⚠️ Alpha Vantage API rate limit reached. Using fallback data.');
+        } else {
+          console.warn('⚠️ Alpha Vantage API issue:', errorMsg);
+        }
+        throw new Error(errorMsg);
       }
 
       // Cache the result
@@ -86,6 +92,7 @@ export class AlphaVantageService {
         high52Week: parseFloat(quote['03. high']),
         low52Week: parseFloat(quote['04. low']),
         lastUpdate: new Date().toISOString(),
+        isRealData: true, // Mark as real API data
       };
     } catch (error) {
       console.error(`Error fetching data for ${symbol}:`, error);
@@ -193,6 +200,7 @@ export class AlphaVantageService {
       high52Week: Math.round((price * (1.2 + Math.random() * 0.3)) * 100) / 100,
       low52Week: Math.round((price * (0.7 - Math.random() * 0.2)) * 100) / 100,
       lastUpdate: new Date().toISOString(),
+      isRealData: false, // Mark as simulated data
     };
   }
 

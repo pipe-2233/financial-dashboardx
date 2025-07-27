@@ -65,25 +65,31 @@ src/
 
 ## 🔧 Configuración API
 
-El proyecto actualmente usa datos simulados para demostración. Para usar APIs reales:
+El proyecto usa **Financial Modeling Prep API** para obtener datos financieros reales.
 
-### APIs Financieras Populares
-- **Alpha Vantage**: API gratuita con límites
+### Configuración de API Key
+
+1. Obtén tu API key gratuita en [Financial Modeling Prep](https://site.financialmodelingprep.com/developer/docs)
+2. Crea un archivo `.env` en la raíz del proyecto:
+```bash
+cp .env.example .env
+```
+3. Agrega tu API key al archivo `.env`:
+```bash
+VITE_FMP_API_KEY=tu_api_key_aqui
+```
+
+### Características de la API
+- **250 requests/día** en el plan gratuito
+- Datos de **40,000+ acciones** mundiales
+- Información financiera en tiempo real
+- Múltiples endpoints: quotes, company profiles, market data
+
+### APIs Alternativas
+- **Alpha Vantage**: 25 requests/día (limitado)
 - **Yahoo Finance**: Datos en tiempo real
 - **IEX Cloud**: API confiable para datos del mercado
 - **Finnhub**: API completa con noticias y análisis
-
-### Ejemplo de Configuración
-```typescript
-// En FinancialService.ts
-const API_KEY = 'tu-api-key';
-const BASE_URL = 'https://api.ejemplo.com';
-
-async getStockData(symbol: string): Promise<StockData> {
-  const response = await fetch(`${BASE_URL}/stock/${symbol}?token=${API_KEY}`);
-  return await response.json();
-}
-```
 
 ## 🎨 Personalización
 

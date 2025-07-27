@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { StockData, MarketSummary } from '../types/financial';
-import { AlphaVantageService } from '../services/AlphaVantageService';
+import FinancialModelingPrepService from '../services/FinancialModelingPrepService';
 
 export const useStockData = (symbols: string[]) => {
   const [stocks, setStocks] = useState<StockData[]>([]);
@@ -8,13 +8,13 @@ export const useStockData = (symbols: string[]) => {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
-  const alphaVantageService = AlphaVantageService.getInstance();
+  const financialService = new FinancialModelingPrepService();
 
   const fetchStocks = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const stockData = await alphaVantageService.getMultipleStocks(symbols);
+      const stockData = await financialService.getMultipleStocks(symbols);
       setStocks(stockData);
       setLastUpdate(new Date());
     } catch (err) {
@@ -22,7 +22,7 @@ export const useStockData = (symbols: string[]) => {
     } finally {
       setLoading(false);
     }
-  }, [symbols, alphaVantageService]);
+  }, [symbols, financialService]);
 
   useEffect(() => {
     if (symbols.length > 0) {
@@ -30,14 +30,17 @@ export const useStockData = (symbols: string[]) => {
     }
   }, [fetchStocks, symbols]);
 
-  // Set up periodic updates (Alpha Vantage doesn't have WebSocket, so we'll poll)
+  // Set up periodic updates
   useEffect(() => {
     if (symbols.length === 0) return;
 
-    // Update every 2 minutes to respect rate limits
+    // Conservative update intervals to preserve API quota
+    // Real data: every 1 hour (3600000ms), Mock data: every 2 hours (7200000ms)
+    const updateInterval = financialService.hasApiKey() ? 3600000 : 7200000;
+    
     const interval = setInterval(() => {
       fetchStocks();
-    }, 120000);
+    }, updateInterval);
 
     return () => clearInterval(interval);
   }, [fetchStocks, symbols]);
@@ -56,26 +59,26 @@ export const useMarketSummary = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const alphaVantageService = AlphaVantageService.getInstance();
+  const financialService = new FinancialModelingPrepService();
 
   const fetchMarketSummary = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const summary = await alphaVantageService.getMarketSummary();
+      const summary = await financialService.getMarketSummary();
       setMarketSummary(summary);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch market summary');
     } finally {
       setLoading(false);
     }
-  }, [alphaVantageService]);
+  }, [financialService]);
 
   useEffect(() => {
     fetchMarketSummary();
     
-    // Refresh every 5 minutes to respect rate limits
-    const interval = setInterval(fetchMarketSummary, 300000);
+    // Refresh every 1 hour for real data, every 2 hours for mock data
+    const interval = setInterval(fetchMarketSummary, financialService.hasApiKey() ? 3600000 : 7200000);
     return () => clearInterval(interval);
   }, [fetchMarketSummary]);
 

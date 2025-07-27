@@ -74,10 +74,48 @@ export const Dashboard: React.FC = () => {
           <div>
             <h3 className="text-yellow-800 font-semibold">Demo Mode</h3>
             <p className="text-yellow-700 text-sm">
-              This is a demonstration dashboard. All portfolio values and trading data are simulated. 
-              Market data is real and provided by Alpha Vantage API. <strong>No real money is involved.</strong>
+              This is a demonstration dashboard. All portfolio values are simulated. 
+              Stock prices may be real (Financial Modeling Prep API) or simulated due to API rate limits (250 requests/day). 
+              <strong>No real money is involved.</strong>
             </p>
           </div>
+        </div>
+      </div>
+
+      {/* DATA SOURCE INDICATOR */}
+      <div className="mb-6 bg-white border rounded-lg p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Activity className="w-5 h-5 text-blue-600" />
+            <span className="font-medium text-gray-700">Data Source:</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            {stocks.length > 0 && stocks[0].isRealData ? (
+              <>
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-green-700 font-medium">Live Data (Financial Modeling Prep)</span>
+              </>
+            ) : (
+              <>
+                <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                <span className="text-orange-700 font-medium">Simulated Data (No API Key)</span>
+              </>
+            )}
+          </div>
+        </div>
+        <div className="mt-2 flex items-center justify-between text-sm text-gray-600">
+          <div>
+            {stocks.length > 0 && !stocks[0].isRealData ? (
+              <>💡 <strong>Tip:</strong> Configure VITE_FMP_API_KEY in .env file to get real market data</>
+            ) : (
+              <>📊 <strong>API Quota:</strong> 250 requests/day • Updates every hour to conserve quota</>
+            )}
+          </div>
+          {lastUpdate && (
+            <div className="text-gray-500">
+              ⏰ Next update: {new Date(lastUpdate.getTime() + 3600000).toLocaleTimeString()}
+            </div>
+          )}
         </div>
       </div>
 

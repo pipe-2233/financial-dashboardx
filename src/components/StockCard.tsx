@@ -136,8 +136,21 @@ export const StockCard: React.FC<StockCardProps> = ({ stock, onClick }) => {
 
       {/* Last Update */}
       <div className="mt-4 pt-3 border-t border-gray-100">
-        <div className="text-xs text-gray-500">
-          Last updated: {new Date(stock.lastUpdate).toLocaleTimeString()}
+        <div className="flex items-center justify-between">
+          <div className="text-xs text-gray-500">
+            Last updated: {new Date(stock.lastUpdate).toLocaleTimeString()}
+          </div>
+          <div className="flex items-center space-x-2">
+            {stock.isRealData ? (
+              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                REAL DATA
+              </span>
+            ) : (
+              <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-medium">
+                SIMULATED
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>

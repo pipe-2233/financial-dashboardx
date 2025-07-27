@@ -9,6 +9,7 @@ export interface StockData {
   high52Week: number;
   low52Week: number;
   lastUpdate: string;
+  isRealData?: boolean; // Indicates if data is from real API or simulated
 }
 
 export interface HistoricalData {
